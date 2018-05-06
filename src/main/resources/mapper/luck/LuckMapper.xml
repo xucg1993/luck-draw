@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xcg.luckdraw.dao.luck.LuckDAO">
+
+    <sql id="table_name">l_luck_draw </sql>
+    <sql id="from_table_name">from
+        <include refid="table_name"/>
+    </sql>
+    <sql id="insert_table_name">insert into
+        <include refid="table_name"/>
+    </sql>
+    <sql id="update_table_name">update
+        <include refid="table_name"/>
+    </sql>
+    <sql id="delete_table_name">delete
+        <include refid="from_table_name"/>
+    </sql>
+    <sql id="countSql">select count(1) from
+        <include refid="table_name"/>
+    </sql>
+    <sql id="selectSql">
+        select
+        luckId
+        ,userId
+        ,`type`
+        ,createTime
+        ,startUpTime
+        ,peopleNum
+        ,activities
+        ,imageUrl
+        ,prizes
+        <include refid="from_table_name"/>
+    </sql>
+
+
+    <sql id="insertSql">
+        <include refid="insert_table_name"/>
+        (luckId
+        ,userId
+        ,`type`
+        ,startUpTime
+        ,peopleNum
+        ,activities
+        ,imageUrl
+        ,prizes
+        )
+        values
+        (#{luckId}
+        ,#{userId}
+        ,#{type}
+        ,#{startUpTime}
+        ,#{peopleNum}
+        ,#{activities}
+        ,#{imageUrl}
+        ,#{prizes})
+    </sql>
+
+    <sql id="orderbySql">
+        order by createTime desc
+    </sql>
+
+    <sql id="limitSql">
+        <if test="numPerPage != null">
+            limit #{startIndex}, #{numPerPage}
+        </if>
+    </sql>
+
+    <sql id="whereSql">
+        <trim prefix="where">1 = 1
+            <if test="userId != null and userId !=''">
+                and userId = #{userId}
+            </if>
+
+            <if test="luckId != null and luckId !=''">
+                and luckId = #{luckId}
+            </if>
+        </trim>
+    </sql>
+
+    <!--  查询全部 -->
+    <select id="findLuckList" resultType="com.xcg.luckdraw.entity.luck.LuckEntity">
+        <include refid="selectSql"/>
+    </select>
+
+    <!--按userId查询-->
+    <select id="listLuckByUserId" resultType="com.xcg.luckdraw.entity.luck.LuckEntity">
+        <include refid="selectSql"/>
+        <include refid="whereSql"/>
+    </select>
+
+    <!--按luckId查询-->
+    <select id="findLuckByLuckId" parameterType="java.lang.Integer" resultType="com.xcg.luckdraw.entity.luck.LuckEntity">
+        <include refid="selectSql"/>
+        where luckId = #{luckId}
+    </select>
+
+    <!--增加用户-->
+    <insert id="saveLuck" parameterType="com.xcg.luckdraw.entity.luck.LuckEntity" useGeneratedKeys="true"
+            keyProperty="luckId">
+        <include refid="insertSql"/>
+    </insert>
+</mapper>
